@@ -1,0 +1,94 @@
+# ModelSim/QuestaSim simulation files
+work/
+*.wlf
+*.vstf
+*.wdb
+*.vcd
+*.ghw
+transcript
+modelsim.ini
+vsim.wlf
+
+# Compilation artifacts
+*.bak
+*.orig
+*.tmp
+*.temp
+
+# Vivado/Quartus project files
+*.xpr
+*.qpf
+*.qsf
+*.qws
+*.quartus
+*.rpt
+*.summary
+*.pin
+*.jdi
+*.sof
+*.pof
+*.rbf
+*.ttf
+*.done
+*.err
+
+# Vivado specific
+.Xil/
+*.cache/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+*.srcs/
+*.gen/
+vivado.log
+vivado.jou
+
+# Intel Quartus specific
+db/
+incremental_db/
+output_files/
+simulation/
+*.qdb
+
+# Synopsys
+*.syn
+*.mr
+*.pvl
+*.pvt
+
+# Cadence
+*.shm
+*.trn
+*.dsn
+*.optrpt
+
+# Verilator
+obj_dir/
+*.vlt
+*.mk
+
+# GTKWave
+*.gtkw
+*.sav
+
+# System files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Log files
+*.log
+
+# Backup files
+*_bak
+*_backup
+*.backup
+
+# Temporary files
+*.orig
+*.rej
