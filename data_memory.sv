@@ -23,7 +23,7 @@ module data_memory #(
     // Create Write
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            // Clearse memory on reset
+            // Clear memory on reset
             for (int i = 0; i < MEM_SIZE*4; i++) begin
                 memory[i] <= 8'h00;
             end
