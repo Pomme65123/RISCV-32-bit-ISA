@@ -8,7 +8,7 @@ module data_memory_tb;
     parameter CLK_PERIOD = 10;
 
     logic                    clk;
-    logic                    reset;
+    logic                    rst_n;
     logic [ADDR_WIDTH-1:0]   addr;
     logic [DATA_WIDTH-1:0]   wdata;
     logic                    we;
@@ -29,7 +29,7 @@ module data_memory_tb;
         .MEM_SIZE(MEM_SIZE)
     ) dut (
         .clk(clk),
-        .reset(reset),
+        .rst_n(rst_n),
         .addr(addr),
         .wdata(wdata),
         .we(we),
@@ -96,11 +96,11 @@ module data_memory_tb;
         wdata = 32'h00000000;
         we = 1'b0;
         be = 4'b0000;
-        reset = 1'b1;  // Assert reset
+        rst_n = 1'b0;  // Assert reset (active-low)
         
         // Reset sequence
         repeat(3) @(posedge clk);
-        reset = 1'b0;  // Deassert reset
+        rst_n = 1'b1;  // Deassert reset (release active-low)
         repeat(2) @(posedge clk);  // Wait for memory initialization
         
         $display("Reset sequence completed, memory initialized");

@@ -6,7 +6,7 @@ module data_memory #(
     parameter MEM_SIZE   = 1024
 ) (
     input  logic                    clk,
-    input  logic                    reset,
+    input  logic                    rst_n,
     input  logic [ADDR_WIDTH-1:0]   addr,
     input  logic [DATA_WIDTH-1:0]   wdata,
     input  logic                    we,
@@ -21,8 +21,8 @@ module data_memory #(
     assign byte_addr = addr;
 
     // Create Write
-    always_ff @(posedge clk or posedge reset) begin
-        if (reset) begin
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
             // Clearse memory on reset
             for (int i = 0; i < MEM_SIZE*4; i++) begin
                 memory[i] <= 8'h00;
