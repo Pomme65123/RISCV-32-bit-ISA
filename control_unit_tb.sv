@@ -15,6 +15,9 @@ module control_unit_tb;
     logic [3:0] alu_ctrl;
     logic       lui_instr;
     logic       auipc_instr;
+    
+    int test_count = 0;
+    int pass_count = 0;
 
     // OPCODE Definitions
     localparam [6:0] OP_LUI    = 7'b0110111; // Load Upper Immediate
@@ -83,6 +86,7 @@ module control_unit_tb;
 
         #10;
 
+        test_count++;
         if (reg_write === exp_reg_write && 
             mem_read === exp_mem_read &&
             mem_write === exp_mem_write &&
@@ -94,6 +98,7 @@ module control_unit_tb;
             lui_instr === exp_lui_instr &&
             auipc_instr === exp_auipc_instr) begin
             $display("PASS %s: All control signals correct", instruction_name);
+            pass_count++;
         end else begin
             $display("FAIL %s:", instruction_name);
             $display("  reg_write: %b (expected %b)", reg_write, exp_reg_write);
@@ -333,6 +338,17 @@ module control_unit_tb;
             1'b1, 1'b0, 1'b0, 1'b0, 1'b0, 1'b1, 2'b00, ALU_SLTU, 1'b0, 1'b0,
             "SLTIU (funct7 ignored)"
         );
+        
+        $display("\n=== Test Results Summary ===");
+        $display("Total Tests: %0d", test_count);
+        $display("Passed: %0d", pass_count);
+        $display("Failed: %0d", test_count - pass_count);
+        
+        if (pass_count == test_count) begin
+            $display("ALL TESTS PASSED!");
+        end else begin
+            $display("Some tests failed.");
+        end
         
         $display("\n=== Control Unit Testbench Completed ===");
         $finish;

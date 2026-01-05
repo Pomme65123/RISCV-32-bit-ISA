@@ -10,6 +10,9 @@ module instr_memory_tb;
     logic                  clk;
     logic [DATA_WIDTH-1:0] data;
     
+    int test_count = 0;
+    int pass_count = 0;
+    
     logic [DATA_WIDTH-1:0] expected_instructions [0:11];
     
 
@@ -58,8 +61,10 @@ module instr_memory_tb;
         */
         repeat(2) @(posedge clk);
         
+        test_count++;
         if (data === expected_data) begin
             $display("PASS %s: addr=0x%08h -> data=0x%08h", description, test_addr, data);
+            pass_count++;
         end else begin
             $display("FAIL %s: addr=0x%08h -> data=0x%08h (expected 0x%08h)", 
                      description, test_addr, data, expected_data);
@@ -157,6 +162,17 @@ module instr_memory_tb;
             addr = i * 4;
             repeat(2) @(posedge clk);
             $display("  PC=0x%08h: Instruction=0x%08h", addr, data);
+        end
+        
+        $display("\n=== Test Results Summary ===");
+        $display("Total Tests: %0d", test_count);
+        $display("Passed: %0d", pass_count);
+        $display("Failed: %0d", test_count - pass_count);
+        
+        if (pass_count == test_count) begin
+            $display("ALL TESTS PASSED!");
+        end else begin
+            $display("Some tests failed.");
         end
         
         $display("\n=== Instruction Memory Testbench Completed ===");

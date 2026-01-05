@@ -14,6 +14,9 @@ module data_memory_tb;
     logic                    we;
     logic [3:0]              be;
     logic [DATA_WIDTH-1:0]   rdata;
+    
+    int test_count = 0;
+    int pass_count = 0;
 
     initial begin
         clk = 0;
@@ -61,8 +64,10 @@ module data_memory_tb;
         we = 1'b0;
         repeat(2) @(posedge clk);
         
+        test_count++;
         if (rdata === expected_data) begin
             $display("PASS READ %s: addr=0x%08h -> data=0x%08h", description, test_addr, rdata);
+            pass_count++;
         end else begin
             $display("FAIL READ %s: addr=0x%08h -> data=0x%08h (expected 0x%08h)", 
                      description, test_addr, rdata, expected_data);
@@ -222,6 +227,17 @@ module data_memory_tb;
         
         repeat(2) @(posedge clk);
         $display("After clock edges: rdata = 0x%08h", rdata);
+        
+        $display("\n=== Test Results Summary ===");
+        $display("Total Tests: %0d", test_count);
+        $display("Passed: %0d", pass_count);
+        $display("Failed: %0d", test_count - pass_count);
+        
+        if (pass_count == test_count) begin
+            $display("ALL TESTS PASSED!");
+        end else begin
+            $display("Some tests failed.");
+        end
         
         $display("\n=== Data Memory Testbench Completed ===");
         $finish;

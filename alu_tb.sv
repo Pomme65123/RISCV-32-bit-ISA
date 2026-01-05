@@ -7,6 +7,9 @@ module alu_tb;
     logic [31:0] result;
     logic zero;
     
+    int test_count = 0;
+    int pass_count = 0;
+    
     localparam [3:0] ALU_ADD  = 4'b0000;
     localparam [3:0] ALU_SUB  = 4'b0001;
     localparam [3:0] ALU_AND  = 4'b0010;
@@ -45,9 +48,11 @@ module alu_tb;
         alu_ctrl = op;
         #10;
         
+        test_count++;
         if (result === expected_result && zero === expected_zero) begin
             $display("PASS %s: a=%h, b=%h, result=%h, zero=%b", 
                      op_name, a, b, result, zero);
+            pass_count++;
         end else begin
             $display("FAIL %s: a=%h, b=%h, result=%h (expected %h), zero=%b (expected %b)", 
                      op_name, a, b, result, expected_result, zero, expected_zero);
@@ -138,6 +143,17 @@ module alu_tb;
         // BGEU
         test_operation(ALU_BGEU, 32'h80000000, 32'h7FFFFFFF, 32'h00000001, 1'b1, "BGEU (unsigned)");
         test_operation(ALU_BGEU, 32'h7FFFFFFF, 32'h80000000, 32'hFFFFFFFF, 1'b0, "BGEU (unsigned)");
+        
+        $display("\n=== Test Results Summary ===");
+        $display("Total Tests: %0d", test_count);
+        $display("Passed: %0d", pass_count);
+        $display("Failed: %0d", test_count - pass_count);
+        
+        if (pass_count == test_count) begin
+            $display("ALL TESTS PASSED!");
+        end else begin
+            $display("Some tests failed.");
+        end
         
         $display("\n=== ALU Testbench Completed ===");
         $finish;
