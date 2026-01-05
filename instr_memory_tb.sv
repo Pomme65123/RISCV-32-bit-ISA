@@ -96,7 +96,7 @@ module instr_memory_tb;
         
         addr = 32'h00000000;
         
-        repeat(3) @(posedge clk);
+        repeat(2) @(posedge clk);
         
         $display("\n--- Testing Sequential Instruction Fetch ---");
         
