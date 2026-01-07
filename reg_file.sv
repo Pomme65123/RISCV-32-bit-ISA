@@ -1,3 +1,6 @@
+`timescale 1ns/1ps
+import riscv_pkg::*;
+
 module reg_file (
     input  logic        clk,
     input  logic        rst_n,
@@ -19,15 +22,15 @@ module reg_file (
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             for (i = 0; i < 32; i = i + 1) begin
-                registers[i] <= 32'h00000000;
+                registers[i] <= RESET_VALUE;
             end
-        end else if (we && wa != 5'b00000) begin
+        end else if (we && wa != REG_ZERO) begin
             registers[wa] <= wd;
         end
     end
     
     // Read every cycle and address 0 is always 0
-    assign rd1 = (ra1 == 5'b00000) ? 32'h00000000 : registers[ra1];
-    assign rd2 = (ra2 == 5'b00000) ? 32'h00000000 : registers[ra2];
+    assign rd1 = (ra1 == REG_ZERO) ? RESET_VALUE : registers[ra1];
+    assign rd2 = (ra2 == REG_ZERO) ? RESET_VALUE : registers[ra2];
 
 endmodule

@@ -50,6 +50,13 @@ incremental_db/
 output_files/
 simulation/
 *.qdb
+*.qtl
+*.qpg
+*.qarlog
+*.cdb
+*.hdb
+*.cdf
+*.bak
 
 # Synopsys
 *.syn

@@ -1,4 +1,5 @@
 `timescale 1ns/1ps
+import riscv_pkg::*;
 
 module forwarding_unit (
     input  logic [4:0] rs1_ex,
@@ -13,23 +14,21 @@ module forwarding_unit (
 
     always_comb begin
         // Default: no forwarding
-        forward_a = 2'b00;
-        forward_b = 2'b00;
+        forward_a = FWD_NONE;
+        forward_b = FWD_NONE;
         
         // Forward for ALU input A (rs1)
-        if (reg_write_mem && (rd_mem != 5'b00000) && (rd_mem == rs1_ex)) begin
-            forward_a = 2'b10;  // Forward from MEM stage
-        end else if (reg_write_wb && (rd_wb != 5'b00000) && (rd_wb == rs1_ex) && 
-                    !(reg_write_mem && (rd_mem != 5'b00000) && (rd_mem == rs1_ex))) begin
-            forward_a = 2'b01;  // Forward from WB stage
+        if (reg_write_mem && (rd_mem != REG_ZERO) && (rd_mem == rs1_ex)) begin
+            forward_a = FWD_MEM; 
+        end else if (reg_write_wb && (rd_wb != REG_ZERO) && (rd_wb == rs1_ex)) begin
+            forward_a = FWD_WB;
         end
         
         // Forward for ALU input B (rs2)
-        if (reg_write_mem && (rd_mem != 5'b00000) && (rd_mem == rs2_ex)) begin
-            forward_b = 2'b10;  // Forward from MEM stage
-        end else if (reg_write_wb && (rd_wb != 5'b00000) && (rd_wb == rs2_ex) &&
-                    !(reg_write_mem && (rd_mem != 5'b00000) && (rd_mem == rs2_ex))) begin
-            forward_b = 2'b01;  // Forward from WB stage
+        if (reg_write_mem && (rd_mem != REG_ZERO) && (rd_mem == rs2_ex)) begin
+            forward_b = FWD_MEM;
+        end else if (reg_write_wb && (rd_wb != REG_ZERO) && (rd_wb == rs2_ex)) begin
+            forward_b = FWD_WB;
         end
     end
 

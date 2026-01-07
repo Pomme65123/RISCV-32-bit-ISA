@@ -62,15 +62,15 @@ module forwarding_unit_tb;
     initial begin
         $display("=== Forwarding Unit Test Bench ===");
         $display("Testing RISC-V pipeline forwarding logic");
-        $display("Forward codes: 00=No forward, 01=Forward from WB, 10=Forward from MEM");
+        $display("Forward codes: 00=No forward, 01=Forward from MEM, 10=Forward from WB");
         $display();
         
-        rs1_ex = 5'b0;
-        rs2_ex = 5'b0;
-        rd_mem = 5'b0;
-        rd_wb = 5'b0;
-        reg_write_mem = 1'b0;
-        reg_write_wb = 1'b0;
+        rs1_ex          = 5'b0;
+        rs2_ex          = 5'b0;
+        rd_mem          = 5'b0;
+        rd_wb           = 5'b0;
+        reg_write_mem   = 1'b0;
+        reg_write_wb    = 1'b0;
         
         $display("--- Testing No Forwarding Cases ---");
         
@@ -90,55 +90,55 @@ module forwarding_unit_tb;
         
         // Test 4: EX hazard on rs1 (forward from MEM)
         set_inputs(5'd5, 5'd6, 5'd5, 5'd7, 1'b1, 1'b1);
-        check_result("EX hazard rs1 only", 2'b10, 2'b00);
+        check_result("EX hazard rs1 only", 2'b01, 2'b00);
         
         // Test 5: EX hazard on rs2 (forward from MEM)
         set_inputs(5'd8, 5'd9, 5'd9, 5'd10, 1'b1, 1'b1);
-        check_result("EX hazard rs2 only", 2'b00, 2'b10);
+        check_result("EX hazard rs2 only", 2'b00, 2'b01);
         
         // Test 6: EX hazard on both rs1 and rs2 (forward from MEM)
         set_inputs(5'd11, 5'd12, 5'd12, 5'd13, 1'b1, 1'b1);
-        check_result("EX hazard both operands (different rd_mem)", 2'b00, 2'b10);
+        check_result("EX hazard both operands (different rd_mem)", 2'b00, 2'b01);
         
         // Test 7: Same register for both rs1 and rs2, EX hazard
         set_inputs(5'd13, 5'd13, 5'd13, 5'd14, 1'b1, 1'b1);
-        check_result("EX hazard same reg both operands", 2'b10, 2'b10);
+        check_result("EX hazard same reg both operands", 2'b01, 2'b01);
         
         $display("\n--- Testing MEM Hazard (WB Stage Forwarding) ---");
         
         // Test 8: MEM hazard on rs1 (forward from WB)
         set_inputs(5'd15, 5'd16, 5'd17, 5'd15, 1'b1, 1'b1);
-        check_result("MEM hazard rs1 only", 2'b01, 2'b00);
+        check_result("MEM hazard rs1 only", 2'b10, 2'b00);
         
         // Test 9: MEM hazard on rs2 (forward from WB)
         set_inputs(5'd18, 5'd19, 5'd20, 5'd19, 1'b1, 1'b1);
-        check_result("MEM hazard rs2 only", 2'b00, 2'b01);
+        check_result("MEM hazard rs2 only", 2'b00, 2'b10);
         
         // Test 10: MEM hazard on both operands with same rd_wb
         set_inputs(5'd21, 5'd21, 5'd22, 5'd21, 1'b1, 1'b1);
-        check_result("MEM hazard both operands same rd", 2'b01, 2'b01);
+        check_result("MEM hazard both operands same rd", 2'b10, 2'b10);
         
         // Test 11: MEM hazard on both operands with different rd_wb
         set_inputs(5'd23, 5'd24, 5'd25, 5'd23, 1'b1, 1'b1);
-        check_result("MEM hazard both operands (different rd_wb)", 2'b01, 2'b00);
+        check_result("MEM hazard both operands (different rd_wb)", 2'b10, 2'b00);
         
         $display("\n--- Testing Priority (EX Hazard Takes Precedence) ---");
         
         // Test 12: Both EX and MEM hazard on rs1, EX wins
         set_inputs(5'd26, 5'd27, 5'd26, 5'd26, 1'b1, 1'b1);
-        check_result("EX priority over MEM hazard rs1", 2'b10, 2'b00);
+        check_result("EX priority over MEM hazard rs1", 2'b01, 2'b00);
         
         // Test 13: Both EX and MEM hazard on rs2, EX wins
         set_inputs(5'd28, 5'd29, 5'd29, 5'd29, 1'b1, 1'b1);
-        check_result("EX priority over MEM hazard rs2", 2'b00, 2'b10);
+        check_result("EX priority over MEM hazard rs2", 2'b00, 2'b01);
         
         // Test 14: Complex case - EX hazard rs1, MEM hazard rs2
         set_inputs(5'd30, 5'd31, 5'd30, 5'd31, 1'b1, 1'b1);
-        check_result("EX hazard rs1, MEM hazard rs2", 2'b10, 2'b01);
+        check_result("EX hazard rs1, MEM hazard rs2", 2'b01, 2'b10);
         
         // Test 15: Complex case - MEM hazard rs1, EX hazard rs2
         set_inputs(5'd1, 5'd2, 5'd2, 5'd1, 1'b1, 1'b1);
-        check_result("MEM hazard rs1, EX hazard rs2", 2'b01, 2'b10);
+        check_result("MEM hazard rs1, EX hazard rs2", 2'b10, 2'b01);
         
         $display("\n--- Testing Register Write Enable Control ---");
         
@@ -166,21 +166,21 @@ module forwarding_unit_tb;
         
         // Test 21: Mixed x0 cases
         set_inputs(5'd0, 5'd15, 5'd0, 5'd15, 1'b1, 1'b1);
-        check_result("Mixed x0 cases", 2'b00, 2'b01);
+        check_result("Mixed x0 cases", 2'b00, 2'b10);
         
         $display("\n--- Testing Edge Cases ---");
         
         // Test 22: Maximum register numbers
         set_inputs(5'd31, 5'd30, 5'd31, 5'd30, 1'b1, 1'b1);
-        check_result("Maximum register numbers", 2'b10, 2'b01);
+        check_result("Maximum register numbers", 2'b01, 2'b10);
         
         // Test 23: Same register for all fields
         set_inputs(5'd16, 5'd16, 5'd16, 5'd17, 1'b1, 1'b1);
-        check_result("Same register multiple fields", 2'b10, 2'b10);
+        check_result("Same register multiple fields", 2'b01, 2'b01);
         
         // Test 24: Complex forwarding scenario
         set_inputs(5'd17, 5'd18, 5'd19, 5'd18, 1'b1, 1'b1);
-        check_result("Complex scenario", 2'b00, 2'b01);
+        check_result("Complex scenario", 2'b00, 2'b10);
         
         // Test 25: All different registers
         set_inputs(5'd20, 5'd21, 5'd22, 5'd23, 1'b1, 1'b1);
@@ -194,7 +194,7 @@ module forwarding_unit_tb;
         
         // Test 27: Back-to-back hazards
         set_inputs(5'd26, 5'd26, 5'd26, 5'd28, 1'b1, 1'b1);
-        check_result("Back-to-back hazards", 2'b10, 2'b10);
+        check_result("Back-to-back hazards", 2'b01, 2'b01);
         
         // Summary
         $display("\n=== Test Results Summary ===");

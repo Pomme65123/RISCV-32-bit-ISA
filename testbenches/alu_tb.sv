@@ -1,4 +1,5 @@
 `timescale 1ns/1ps
+import riscv_pkg::*;
 
 module alu_tb;
 
@@ -9,23 +10,6 @@ module alu_tb;
     
     int test_count = 0;
     int pass_count = 0;
-    
-    localparam [3:0] ALU_ADD  = 4'b0000;
-    localparam [3:0] ALU_SUB  = 4'b0001;
-    localparam [3:0] ALU_AND  = 4'b0010;
-    localparam [3:0] ALU_OR   = 4'b0011;
-    localparam [3:0] ALU_XOR  = 4'b0100;
-    localparam [3:0] ALU_SLL  = 4'b0101;
-    localparam [3:0] ALU_SRL  = 4'b0110;
-    localparam [3:0] ALU_SRA  = 4'b0111;
-    localparam [3:0] ALU_SLT  = 4'b1000;
-    localparam [3:0] ALU_SLTU = 4'b1001;
-    localparam [3:0] ALU_BEQ  = 4'b1010;
-    localparam [3:0] ALU_BNE  = 4'b1011;
-    localparam [3:0] ALU_BLT  = 4'b1100;
-    localparam [3:0] ALU_BGE  = 4'b1101;
-    localparam [3:0] ALU_BLTU = 4'b1110;
-    localparam [3:0] ALU_BGEU = 4'b1111;
 
     alu dut (
         .a(a),

@@ -1,4 +1,5 @@
 `timescale 1ns/1ps
+import riscv_pkg::*;
 
 module control_unit_tb;
 
@@ -18,34 +19,6 @@ module control_unit_tb;
     
     int test_count = 0;
     int pass_count = 0;
-
-    // OPCODE Definitions
-    localparam [6:0] OP_LUI    = 7'b0110111; // Load Upper Immediate
-    localparam [6:0] OP_AUIPC  = 7'b0010111; // Add Upper Immediate to PC
-    localparam [6:0] OP_JAL    = 7'b1101111; // Jump and Link
-    localparam [6:0] OP_JALR   = 7'b1100111; // Jump and Link Register
-    localparam [6:0] OP_BRANCH = 7'b1100011; // Branch instructions
-    localparam [6:0] OP_LOAD   = 7'b0000011; // Load instructions
-    localparam [6:0] OP_STORE  = 7'b0100011; // Store instructions
-    localparam [6:0] OP_IMM    = 7'b0010011; // Immediate arithmetic
-    localparam [6:0] OP_REG    = 7'b0110011; // Register arithmetic
-
-    localparam [3:0] ALU_ADD  = 4'b0000;
-    localparam [3:0] ALU_SUB  = 4'b0001;
-    localparam [3:0] ALU_AND  = 4'b0010;
-    localparam [3:0] ALU_OR   = 4'b0011;
-    localparam [3:0] ALU_XOR  = 4'b0100;
-    localparam [3:0] ALU_SLL  = 4'b0101;
-    localparam [3:0] ALU_SRL  = 4'b0110;
-    localparam [3:0] ALU_SRA  = 4'b0111;
-    localparam [3:0] ALU_SLT  = 4'b1000;
-    localparam [3:0] ALU_SLTU = 4'b1001;
-    localparam [3:0] ALU_BEQ  = 4'b1010;
-    localparam [3:0] ALU_BNE  = 4'b1011;
-    localparam [3:0] ALU_BLT  = 4'b1100;
-    localparam [3:0] ALU_BGE  = 4'b1101;
-    localparam [3:0] ALU_BLTU = 4'b1110;
-    localparam [3:0] ALU_BGEU = 4'b1111;
 
     control_unit dut (
         .opcode(opcode),
@@ -87,15 +60,15 @@ module control_unit_tb;
         #10;
 
         test_count++;
-        if (reg_write === exp_reg_write && 
-            mem_read === exp_mem_read &&
-            mem_write === exp_mem_write &&
-            branch === exp_branch &&
-            jump === exp_jump &&
-            alu_src === exp_alu_src &&
-            mem_to_reg === exp_mem_to_reg &&
-            alu_ctrl === exp_alu_ctrl &&
-            lui_instr === exp_lui_instr &&
+        if (reg_write   === exp_reg_write   && 
+            mem_read    === exp_mem_read    &&
+            mem_write   === exp_mem_write   &&
+            branch      === exp_branch      &&
+            jump        === exp_jump        &&
+            alu_src     === exp_alu_src     &&
+            mem_to_reg  === exp_mem_to_reg  &&
+            alu_ctrl    === exp_alu_ctrl    &&
+            lui_instr   === exp_lui_instr   &&
             auipc_instr === exp_auipc_instr) begin
             $display("PASS %s: All control signals correct", instruction_name);
             pass_count++;

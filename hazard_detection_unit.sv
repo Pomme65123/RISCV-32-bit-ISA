@@ -1,4 +1,5 @@
 `timescale 1ns/1ps
+import riscv_pkg::*;
 
 module hazard_detection_unit (
     input  logic [4:0] rs1_id,
@@ -23,24 +24,24 @@ module hazard_detection_unit (
         - Destination register matches a source register in the ID stage
     */ 
     always_comb begin
-        load_use_hazard = mem_read_ex && (rd_ex != 5'b00000) && ((rd_ex == rs1_id) || (rd_ex == rs2_id));
+        load_use_hazard = mem_read_ex && (rd_ex != REG_ZERO) && ((rd_ex == rs1_id) || (rd_ex == rs2_id));
     end
     
     // Determines pipeline control signals
     always_comb begin
         // All control signals should be inactive
-        stall_if = 1'b0;
-        stall_id = 1'b0;
-        flush_id = 1'b0;
-        flush_ex = 1'b0;
+        stall_if = DISABLE;
+        stall_id = DISABLE;
+        flush_id = DISABLE;
+        flush_ex = DISABLE;
         
         if (load_use_hazard) begin
-            stall_if = 1'b1;
-            stall_id = 1'b1;
-            flush_ex = 1'b1;
+            stall_if = ENABLE;
+            stall_id = ENABLE;
+            flush_ex = ENABLE;
         end else if (branch_taken_ex || jump_ex) begin
-            flush_id = 1'b1;
-            flush_ex = 1'b1;
+            flush_id = ENABLE;
+            flush_ex = ENABLE;
         end
     end
 

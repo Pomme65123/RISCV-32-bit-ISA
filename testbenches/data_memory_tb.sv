@@ -44,10 +44,10 @@ module data_memory_tb;
         input [3:0]  test_be,
         input string description
     );
-        addr = test_addr;
-        wdata = test_data;
-        we = 1'b1;
-        be = test_be;
+        addr    = test_addr;
+        wdata   = test_data;
+        we      = 1'b1;
+        be      = test_be;
 
         @(posedge clk);
         we = 1'b0;

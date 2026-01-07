@@ -1,4 +1,5 @@
 `timescale 1ns/1ps
+import riscv_pkg::*;
 
 module control_unit (
     input  logic [6:0] opcode,
@@ -15,122 +16,94 @@ module control_unit (
     output logic       lui_instr,
     output logic       auipc_instr
 );
-
-    // OPCODE Definitions
-    localparam [6:0] OP_LUI    = 7'b0110111; // Load Upper Immediate
-    localparam [6:0] OP_AUIPC  = 7'b0010111; // Add Upper Immediate to PC
-    localparam [6:0] OP_JAL    = 7'b1101111; // Jump and Link
-    localparam [6:0] OP_JALR   = 7'b1100111; // Jump and Link Register
-    localparam [6:0] OP_BRANCH = 7'b1100011; // Branch instructions
-    localparam [6:0] OP_LOAD   = 7'b0000011; // Load instructions
-    localparam [6:0] OP_STORE  = 7'b0100011; // Store instructions
-    localparam [6:0] OP_IMM    = 7'b0010011; // Immediate arithmetic
-    localparam [6:0] OP_REG    = 7'b0110011; // Register arithmetic
-    
-    localparam [3:0] ALU_ADD  = 4'b0000;
-    localparam [3:0] ALU_SUB  = 4'b0001;
-    localparam [3:0] ALU_AND  = 4'b0010;
-    localparam [3:0] ALU_OR   = 4'b0011;
-    localparam [3:0] ALU_XOR  = 4'b0100;
-    localparam [3:0] ALU_SLL  = 4'b0101;
-    localparam [3:0] ALU_SRL  = 4'b0110;
-    localparam [3:0] ALU_SRA  = 4'b0111;
-    localparam [3:0] ALU_SLT  = 4'b1000;
-    localparam [3:0] ALU_SLTU = 4'b1001;
-    localparam [3:0] ALU_BEQ  = 4'b1010;
-    localparam [3:0] ALU_BNE  = 4'b1011;
-    localparam [3:0] ALU_BLT  = 4'b1100;
-    localparam [3:0] ALU_BGE  = 4'b1101;
-    localparam [3:0] ALU_BLTU = 4'b1110;
-    localparam [3:0] ALU_BGEU = 4'b1111;
     
     // Case statements for OPCODES
     always_comb begin
-        reg_write = 1'b0;
-        mem_read = 1'b0;
-        mem_write = 1'b0;
-        branch = 1'b0;
-        jump = 1'b0;
-        alu_src = 1'b0;
-        mem_to_reg = 2'b00;
-        alu_ctrl = ALU_ADD;
-        lui_instr = 1'b0;
-        auipc_instr = 1'b0;
+        reg_write   = DISABLE;
+        mem_read    = DISABLE;
+        mem_write   = DISABLE;
+        branch      = DISABLE;
+        jump        = DISABLE;
+        alu_src     = RESET_1BIT;
+        mem_to_reg  = MEM_TO_REG_ALU;
+        alu_ctrl    = ALU_ADD;
+        lui_instr   = RESET_1BIT;
+        auipc_instr = RESET_1BIT;
         
         case (opcode)
             OP_LUI: begin
-                reg_write = 1'b1;
-                alu_src = 1'b1;
-                mem_to_reg = 2'b00;
-                alu_ctrl = ALU_ADD;
-                lui_instr = 1'b1;
+                reg_write   = ENABLE;
+                alu_src     = ENABLE;
+                mem_to_reg  = MEM_TO_REG_ALU;
+                alu_ctrl    = ALU_ADD;
+                lui_instr   = ENABLE;
             end
             
             OP_AUIPC: begin
-                reg_write = 1'b1;
-                alu_src = 1'b1;
-                mem_to_reg = 2'b00;
-                alu_ctrl = ALU_ADD;
-                auipc_instr = 1'b1;
+                reg_write   = ENABLE;
+                alu_src     = ENABLE;
+                mem_to_reg  = MEM_TO_REG_ALU;
+                alu_ctrl    = ALU_ADD;
+                auipc_instr = ENABLE;
             end
             
             OP_JAL: begin
-                reg_write = 1'b1;
-                jump = 1'b1;
-                mem_to_reg = 2'b10; 
-                alu_src = 1'b1;
-                alu_ctrl = ALU_ADD;
+                reg_write   = ENABLE;
+                jump        = ENABLE;
+                mem_to_reg  = MEM_TO_REG_PC4; 
+                alu_src     = ENABLE;
+                alu_ctrl    = ALU_ADD;
             end
             
             OP_JALR: begin
-                reg_write = 1'b1;
-                jump = 1'b1;
-                mem_to_reg = 2'b10;
-                alu_src = 1'b1;
-                alu_ctrl = ALU_ADD;
+                reg_write   = ENABLE;
+                jump        = ENABLE;
+                mem_to_reg  = MEM_TO_REG_PC4;
+                alu_src     = ENABLE;
+                alu_ctrl    = ALU_ADD;
             end
             
             OP_BRANCH: begin
-                branch = 1'b1;
+                branch = ENABLE;
                 case (funct3)
-                    3'b000: alu_ctrl = ALU_BEQ;     // BEQ
-                    3'b001: alu_ctrl = ALU_BNE;     // BNE
-                    3'b100: alu_ctrl = ALU_BLT;     // BLT
-                    3'b101: alu_ctrl = ALU_BGE;     // BGE
-                    3'b110: alu_ctrl = ALU_BLTU;    // BLTU
-                    3'b111: alu_ctrl = ALU_BGEU;    // BGEU
+                    FUNCT3_BEQ:  alu_ctrl = ALU_BEQ;     // BEQ
+                    FUNCT3_BNE:  alu_ctrl = ALU_BNE;     // BNE
+                    FUNCT3_BLT:  alu_ctrl = ALU_BLT;     // BLT
+                    FUNCT3_BGE:  alu_ctrl = ALU_BGE;     // BGE
+                    FUNCT3_BLTU: alu_ctrl = ALU_BLTU;    // BLTU
+                    FUNCT3_BGEU: alu_ctrl = ALU_BGEU;    // BGEU
                     default: alu_ctrl = ALU_BEQ;
                 endcase
             end
             
             OP_LOAD: begin
-                reg_write = 1'b1;
-                mem_read = 1'b1;
-                alu_src = 1'b1;
-                mem_to_reg = 2'b01;
-                alu_ctrl = ALU_ADD;
+                reg_write   = ENABLE;
+                mem_read    = ENABLE;
+                alu_src     = ENABLE;
+                mem_to_reg  = MEM_TO_REG_MEM;
+                alu_ctrl    = ALU_ADD;
             end
             
             OP_STORE: begin
-                mem_write = 1'b1;
-                alu_src = 1'b1;
-                alu_ctrl = ALU_ADD;
+                mem_write   = ENABLE;
+                alu_src     = ENABLE;
+                alu_ctrl    = ALU_ADD;
             end
             
             OP_IMM: begin
-                reg_write = 1'b1;
-                alu_src = 1'b1;
-                mem_to_reg = 2'b00;
+                reg_write   = ENABLE;
+                alu_src     = ENABLE;
+                mem_to_reg  = MEM_TO_REG_ALU;
                 case (funct3)
-                    3'b000: alu_ctrl = ALU_ADD;     // ADDI
-                    3'b010: alu_ctrl = ALU_SLT;     // SLTI
-                    3'b011: alu_ctrl = ALU_SLTU;    // SLTIU
-                    3'b100: alu_ctrl = ALU_XOR;     // XORI
-                    3'b110: alu_ctrl = ALU_OR;      // ORI
-                    3'b111: alu_ctrl = ALU_AND;     // ANDI
-                    3'b001: alu_ctrl = ALU_SLL;     // SLLI
-                    3'b101: begin
-                        if (funct7 == 7'b0100000)
+                    FUNCT3_ADDI:  alu_ctrl = ALU_ADD;     // ADDI
+                    FUNCT3_SLTI:  alu_ctrl = ALU_SLT;     // SLTI
+                    FUNCT3_SLTIU: alu_ctrl = ALU_SLTU;    // SLTIU
+                    FUNCT3_XORI:  alu_ctrl = ALU_XOR;     // XORI
+                    FUNCT3_ORI:   alu_ctrl = ALU_OR;      // ORI
+                    FUNCT3_ANDI:  alu_ctrl = ALU_AND;     // ANDI
+                    FUNCT3_SLLI:  alu_ctrl = ALU_SLL;     // SLLI
+                    FUNCT3_SRLI_SRAI: begin
+                        if (funct7 == FUNCT7_ALT)
                             alu_ctrl = ALU_SRA;     // SRAI
                         else
                             alu_ctrl = ALU_SRL;     // SRLI
@@ -140,27 +113,27 @@ module control_unit (
             end
             
             OP_REG: begin
-                reg_write = 1'b1;
-                mem_to_reg = 2'b00;
+                reg_write   = ENABLE;
+                mem_to_reg  = MEM_TO_REG_ALU;
                 case (funct3)
-                    3'b000: begin
-                        if (funct7 == 7'b0100000)
+                    FUNCT3_ADDI: begin
+                        if (funct7 == FUNCT7_ALT)
                             alu_ctrl = ALU_SUB;     // SUB
                         else
                             alu_ctrl = ALU_ADD;     // ADD
                     end
-                    3'b001: alu_ctrl = ALU_SLL;     // SLL
-                    3'b010: alu_ctrl = ALU_SLT;     // SLT
-                    3'b011: alu_ctrl = ALU_SLTU;    // SLTU
-                    3'b100: alu_ctrl = ALU_XOR;     // XOR
-                    3'b101: begin
-                        if (funct7 == 7'b0100000)
+                    FUNCT3_SLLI:      alu_ctrl = ALU_SLL;     // SLL
+                    FUNCT3_SLTI:      alu_ctrl = ALU_SLT;     // SLT
+                    FUNCT3_SLTIU:     alu_ctrl = ALU_SLTU;    // SLTU
+                    FUNCT3_XORI:      alu_ctrl = ALU_XOR;     // XOR
+                    FUNCT3_SRLI_SRAI: begin
+                        if (funct7 == FUNCT7_ALT)
                             alu_ctrl = ALU_SRA;     // SRA
                         else
                             alu_ctrl = ALU_SRL;     // SRL
                     end
-                    3'b110: alu_ctrl = ALU_OR;      // OR
-                    3'b111: alu_ctrl = ALU_AND;     // AND
+                    FUNCT3_ORI:  alu_ctrl = ALU_OR;      // OR
+                    FUNCT3_ANDI: alu_ctrl = ALU_AND;     // AND
                     default: alu_ctrl = ALU_ADD;
                 endcase
             end
