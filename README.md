@@ -37,7 +37,9 @@ RISC-V/
 │   ├── instr_memory_tb.sv
 │   ├── reg_file_tb.sv
 │   └── riscv_cpu_tb.sv      # Full processor testbench
-├── work/                    # ModelSim compilation directory
+├── waveforms/                # Simulation waveform outputs
+│   └── riscv_cpu_output.png  # Complete CPU simulation waveform
+├── work/                     # ModelSim compilation directory
 ├── .gitignore
 └── README.md
 ```
@@ -122,6 +124,36 @@ vsim -c -do "run -all; quit" riscv_cpu_tb
    run -all
    wave zoomfull
    ```
+
+## Simulation Results
+
+### Expected Test Results
+
+All testbenches should pass with these results:
+
+- **ALU Testbench**: 37/37 tests passed
+- **Control Unit Testbench**: 34/34 tests passed
+- **Data Memory Testbench**: 30/30 tests passed
+- **Forwarding Unit Testbench**: All tests passed
+- **Hazard Detection Testbench**: 20/20 tests passed
+- **Immediate Generator Testbench**: All tests passed
+- **Instruction Memory Testbench**: 23/23 tests passed
+- **Register File Testbench**: 24/24 tests passed
+- **Full CPU Testbench**: 28/28 tests passed
+
+### RISC-V CPU Waveform
+
+The complete processor simulation produces comprehensive waveforms showing pipeline operation:
+
+![RISC-V CPU Waveform](waveforms/riscv_cpu_output.png)
+
+The waveform demonstrates:
+- **Pipeline stages**: Clear progression through IF, ID, EX, MEM, WB stages
+- **Instruction execution**: Sequential processing of different instruction types
+- **Program counter**: Proper PC increment and branch/jump behavior
+- **Pipeline control**: Hazard detection and data forwarding in action
+- **Memory operations**: Load/store instruction execution
+- **Register file access**: Read/write operations with proper timing
 
 ## Instruction Set Support
 
