@@ -36,7 +36,7 @@ RISC-V/
 │   ├── imm_gen_tb.sv
 │   ├── instr_memory_tb.sv
 │   ├── reg_file_tb.sv
-│   └── riscv_cpu_tb.sv      # Full processor testbench
+│   └── riscv_cpu_tb.sv       # Full processor testbench
 ├── waveforms/                # Simulation waveform outputs
 │   └── riscv_cpu_output.png  # Complete CPU simulation waveform
 ├── work/                     # ModelSim compilation directory
